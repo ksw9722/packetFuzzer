@@ -13,6 +13,7 @@ import struct
 
 from scapy.all import *
 from datetime import timedelta
+from sys import platform
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--ip",type=str,required=True,help="target ip address")
@@ -62,6 +63,8 @@ def makeRandHTTPParam():
     return result
 
 def runRadamsa(fuzzer_input): # apply radaramsa for payload complexity
+    if platform=='win32':
+        return fuzzer_input.encode()
 
     seed = random.randint(0,128)
     radamsa = subprocess.Popen(['radamsa','--seed',str(seed)],stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
@@ -83,37 +86,35 @@ def pcapParser(pcap,protocol): # parse Pcap and create Seed
         for session in sessions:
 
             for packet in sessions[session]:
-                data = str(packet[TCP].payload)
-                #print str(data)
+                if packet.haslayer(Raw):
+                    #print('-')
+                    data = str(packet[Raw].load)
+                    #print(str(data))
 
-                if len(data)<1:
-                    continue
+                    if len(data)<1:
+                        continue
 
-                if data not in testcase:
-                    testcase.append(data)
+                    if data not in testcase:
+                        testcase.append(data)
     
     else: # udp
         packetList = rdpcap(pcap)
-        sessions = packetList.sessions()
+        for packet in packetList:
+            udp_packet = packet[UDP]
+            data = str(udp_packet.payload)
 
-        for session in sessions:
+            if len(data)<1:
+                continue
             
-            for packet in sessions[session]:
-                data = str(packet[UDP].payload)
-                #print str(data)
-
-                if len(data)<1:
-                    continue
-
-                if data not in testcase:
-                    testcase.append(data)
-
+            if data not in testcase:
+                testcase.append(data)
+        
 def printVerbose(data):
 
     if VERBOSE!=0:
         print(data)
 
-def makePayload(test,TOGGLE): # make Fuzz Packet. (pcap data + radramsa fuzz)
+def makePayload(test,TOGGLE=0): # make Fuzz Packet. (pcap data + radramsa fuzz)
     if isinstance(test,bytes):    
         test = test.decode('iso-8859-1')
     
@@ -121,9 +122,11 @@ def makePayload(test,TOGGLE): # make Fuzz Packet. (pcap data + radramsa fuzz)
     if TOGGLE==0: # with dummy payload
         TOGGLE = 1
         printVerbose('[*] Make Payload..!!')
-        if len((test).strip())==0:
+        
+        
+        if len(test.strip())==0:
             return ''
-
+        #print('g')
         tmp = list(test)
         tlen = len(tmp)
 
@@ -187,6 +190,7 @@ def attack(protocol,TOGGLE): # send fuzzed packet to target.
         tpayload = payload
 
     else : # case UDP
+        
         attacksock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         attacksock.settimeout(5)
         
@@ -213,6 +217,8 @@ def main():
 
     if args.pcap!=None:
         pcapParser(args.pcap,protocol) # TCP or UDP
+        #print(testcase)
+        
     elif args.corpus!=None:
         setCorpusUsingPath(args.corpus)
     else:
@@ -234,7 +240,7 @@ def main():
                 i +=1
                 
         except KeyboardInterrupt:
-            print('[*] Fuzzing Exit...!! Thank you')
+            print('[*] Fuzzing Exit...!! Keyboard Interrupt')
             endTime =time.time()
             elapsedTime = math.floor(endTime - startTime)
             elapsedTime = str(timedelta(seconds=elapsedTime))
@@ -249,7 +255,7 @@ def main():
             
 
             if timecount == 3:
-                print('[*] Fuzzing Exit...!! Thank you')
+                print('[*] Fuzzing Exit...!! Timeout')
                 endTime =time.time()
                 elapsedTime = math.floor(endTime - startTime)
                 elapsedTime = str(timedelta(seconds=elapsedTime))
@@ -262,10 +268,10 @@ def main():
 
         except Exception as e:
             ecount +=1
-            printVerbose('[-] Error :'+str(e))
+            print('[-] Error :'+str(e))
 
-            if ecount == 3:
-                print('[*] Fuzzing Exit...!! Thank you')
+            if ecount == 100000:
+                print('[*] Fuzzing Exit...!!error occured')
                 endTime =time.time()
                 elapsedTime = math.floor(endTime - startTime)
                 elapsedTime = str(timedelta(seconds=elapsedTime))
