@@ -1,0 +1,16 @@
+GET / HTTP/1.1
+Host: 192.168.183.146:3000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36
+accept: text/html, application/xhtml+xml
+x-turbo-request-id: 3ee22021-99d9-40cc-a63c-480b5042eb80
+Referer: http://192.168.183.146:3000/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko,en;q=0.9,ko-KR;q=0.8,en-US;q=0.7
+Test: 123123
+X-Forwarded-For: 127.0.0.1
+X-Forwarded-Host: 127.0.0.1
+Cookie: _blog_session=FI2o8Zl1mJX4M6h0fj119UVUow7YvO2F8K75C93YIobB54us4yQ2s1O8Yw10ZLGW64ZneiPepfaeclnCsJbEqeqdCU64kBfxCJ87JrPKP94hz2u95U6nPg81Ltq0s7DsUSQ1d5U87SoTGRgRLDvgFByq5IAhtZM%2FeM%2BONpHmtbYTIXPqWTG9A0p1jgxf2auJmnWl1G0nF0fxnGKwtcaPjIEbNAXDFvqoqwJOQ5wVFIYPiX%2BmlsrhO9sk5arcCcxW5gx6GNCeGHo%2FT6AMRDZastSHaInY--pf5uUxOvunAOitOZ--6e4Ig7ewyYL3vKBErq4V2w%3D%3D
+If-None-Match: W/"e3cf4daf2b0821792c0ffe2ea61436b2"
+Connection: close
+
+

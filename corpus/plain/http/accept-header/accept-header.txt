@@ -1,0 +1,9 @@
+GET / HTTP/1.1
+Host: 192.168.183.146:9292
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36
+accept: text/html, application/xhtml+xml
+Accept-Encoding: {{FUZZ}}
+Accept-Language: ko,en;q=0.9,ko-KR;q=0.8,en-US;q=0.7
+x-turbo-request-id: 3ee22021-99d9-40cc-a63c-480b5042eb80
+Referer: http://192.168.183.146:3000/
+
